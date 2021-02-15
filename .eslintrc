@@ -1,0 +1,37 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "es6": true,
+    "commonjs": true
+  },
+  "settings": {
+    "react": {
+      "version": "^17.0.0"
+    }
+  },
+  "extends": ["airbnb", "prettier", "prettier/react"],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+    "sourceType": "module",
+    "allowImportExportEverywhere": true
+  },
+  "plugins": ["prettier", "react"],
+  "globals": {
+    "process": true, // for DefinePlugin provide env
+    "tinymce": true,
+    "jest": true,
+    "describe": true,
+    "it": true,
+    "expect": true,
+    "test": true
+  },
+  "rules": {
+    "prettier/prettier": ["error"],
+    "import/no-named-as-default": "off"
+  }
+}

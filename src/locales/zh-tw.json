@@ -1,0 +1,4 @@
+{
+  "hello": "哈囉 !",
+  "superHello": "哈囉 ! { someoneName } !"
+}
