@@ -56,5 +56,9 @@ module.exports = () => {
         excludeChunks: 'manifest',
       }),
     ],
+    devServer: {
+      host: '0.0.0.0',
+      hot: true,
+    },
   };
 };
