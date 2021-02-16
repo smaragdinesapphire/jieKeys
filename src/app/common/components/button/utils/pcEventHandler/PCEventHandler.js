@@ -1,4 +1,4 @@
-import Publisher from '../../../utils/Publisher';
+import Publisher from '../../../../utils/Publisher';
 
 const EVENT_KEY = {
   MOUSE_DOWN: 'mousedown',
