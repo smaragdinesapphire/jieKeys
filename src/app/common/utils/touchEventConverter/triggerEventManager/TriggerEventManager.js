@@ -11,6 +11,14 @@ export default class TriggerEventManager {
     this.eventMap = new Map();
   }
 
+  has(eventName, useCapture = false) {
+    if (this.eventMap.has(eventName)) {
+      const useCaptureMap = this.eventMap.get(eventName);
+      return useCaptureMap.has(useCapture);
+    }
+    return false;
+  }
+
   add(eventName, fn, useCapture = false) {
     if (TriggerEventManager.validEventName(eventName)) {
       if (this.eventMap.has(eventName) === false) this.eventMap.set(eventName, new Map());
