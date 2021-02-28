@@ -10,12 +10,12 @@ export default class HandleEventManager {
     this.eventMap = new Map();
   }
 
-  set(eventName, useCapture = false) {
+  set(eventName, useCapture = false, fn) {
     if (HandleEventManager.validEventName(eventName)) {
       if (this.eventMap.has(eventName) === false) this.eventMap.set(eventName, new Map());
 
       const useCaptureMap = this.eventMap.get(eventName);
-      if (useCaptureMap.has(useCapture) === false) useCaptureMap.set(useCapture, true);
+      if (useCaptureMap.has(useCapture) === false) useCaptureMap.set(useCapture, fn);
       return true;
     }
     return false;
