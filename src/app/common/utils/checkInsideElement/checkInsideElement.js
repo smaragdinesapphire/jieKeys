@@ -1,5 +1,3 @@
-import { check } from 'prettier';
-
 /**
  * @function checkInsideElement
  * @param {object} event event object
