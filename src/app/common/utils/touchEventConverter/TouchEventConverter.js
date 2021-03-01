@@ -6,8 +6,8 @@ import checkInsideElement from '../checkInsideElement/checkInsideElement';
 const MATERIAL_EVENT = {
   mousedown: ['mousedown', 'touchstart'],
   mouseup: ['mouseup', 'touchend'],
-  click: ['click', 'touchstart', 'touchend', 'touchmove'],
-  contextmenu: ['contextmenu', 'touchstart', 'touchend'],
+  click: ['click', 'touchstart', 'touchend'],
+  contextmenu: ['contextmenu', 'touchstart', 'touchend', 'touchmove'],
   mousemove: ['mousemove', 'touchmove'],
 };
 
@@ -31,11 +31,9 @@ export default class TouchEventConverter {
     return this.target.addEventListener !== undefined;
   }
 
-  triggerEvent(eventName, e) {
-    [false, true].forEach(useCapture => {
-      if (this.domHandleEventManager.has(eventName, useCapture))
-        this.userHandleEventManager.action(eventName, useCapture, e);
-    });
+  triggerEvent(eventName, e, eventUseCapture) {
+    if (this.domHandleEventManager.has(eventName, eventUseCapture))
+      this.userHandleEventManager.action(eventName, eventUseCapture, e);
   }
 
   handleTouchStart(e, useCapture) {
@@ -65,16 +63,16 @@ export default class TouchEventConverter {
     const { showContextMenu, start } = this.record;
     if (start) {
       this.record = { ...this.record, start: false };
-      if (checkInsideElement(e, this.target)) this.triggerEvent('mousedown', e);
+      if (checkInsideElement(e, this.target)) this.triggerEvent('click', e, useCapture);
     }
     if (showContextMenu) {
-      this.triggerEvent('contextmenu', e);
+      this.triggerEvent('contextmenu', e, useCapture);
       this.record = { ...this.record, showContextMenu: false, start: false };
     }
     this.userHandleEventManager.action('mouseup', useCapture, e);
   }
 
-  handleTouchMove(e) {
+  handleTouchMove(e, useCapture) {
     const { start } = this.record;
     if (start) {
       if (this.domHandleEventManager.has('contextmenu', true) || this.domHandleEventManager.has('contextmenu', false)) {
@@ -95,7 +93,7 @@ export default class TouchEventConverter {
         } else this.record = { ...this.record, showContextMenu: false };
       }
     }
-    this.triggerEvent('mousemove', e);
+    this.triggerEvent('mousemove', e, useCapture);
   }
 
   handleMaterialEvent(eventName, useCapture) {
@@ -114,14 +112,14 @@ export default class TouchEventConverter {
                 this.handleTouchEnd(e, useCapture);
                 break;
               case 'touchmove':
-                this.handleTouchMove(e);
+                this.handleTouchMove(e, useCapture);
                 break;
               // no default
             }
           };
         else eventHandler = e => this.userHandleEventManager.action(name, useCapture, e);
         this.target.addEventListener(name, eventHandler, useCapture);
-        this.domHandleEventManager.set(eventName, useCapture, eventHandler);
+        this.domHandleEventManager.set(name, useCapture, eventHandler);
       }
     });
   }
