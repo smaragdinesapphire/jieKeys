@@ -21,6 +21,16 @@ export default class HandleEventManager {
     return false;
   }
 
+  get(eventName, useCapture = false) {
+    if (HandleEventManager.validEventName(eventName)) {
+      if (this.eventMap.has(eventName)) {
+        const useCaptureMap = this.eventMap.get(eventName);
+        return useCaptureMap.get(useCapture);
+      }
+    }
+    return undefined;
+  }
+
   delete(eventName, useCapture) {
     if (HandleEventManager.validEventName(eventName)) {
       if (this.eventMap.has(eventName) === true) {
