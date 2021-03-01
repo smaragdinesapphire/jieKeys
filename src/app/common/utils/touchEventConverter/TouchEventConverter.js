@@ -25,6 +25,8 @@ export default class TouchEventConverter {
       showContextMenu: false,
       timerId: null,
     };
+
+    window.touch = this; // JIE TODO, test
   }
 
   validTarget() {
@@ -61,13 +63,13 @@ export default class TouchEventConverter {
 
   handleTouchEnd(e, useCapture) {
     const { showContextMenu, start } = this.record;
-    if (start) {
-      this.record = { ...this.record, start: false };
-      if (checkInsideElement(e, this.target)) this.triggerEvent('click', e, useCapture);
-    }
+
     if (showContextMenu) {
       this.triggerEvent('contextmenu', e, useCapture);
       this.record = { ...this.record, showContextMenu: false, start: false };
+    } else if (start) {
+      this.record = { ...this.record, start: false };
+      if (checkInsideElement(e, this.target)) this.triggerEvent('click', e, useCapture);
     }
     this.userHandleEventManager.action('mouseup', useCapture, e);
   }
