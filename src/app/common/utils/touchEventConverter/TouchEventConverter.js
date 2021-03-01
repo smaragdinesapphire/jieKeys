@@ -1,5 +1,5 @@
-import TriggerEventManager from './triggerEventManager/TriggerEventManager';
-import HandleEventManager from './handleEventManager/HandleEventManager';
+import UserHandleEventManager from './userHandleEventManager/UserHandleEventManager';
+import DomHandleEventManager from './domHandleEventManager/DomHandleEventManager';
 import getEventPosition from '../getEventPosition/getEventPosition';
 import checkInsideElement from '../checkInsideElement/checkInsideElement';
 
@@ -17,8 +17,8 @@ const CONTEXT_MENU_MOVE_LIMIT_PIXEL = 3 ** 2;
 export default class TouchEventConverter {
   constructor(target) {
     this.target = target;
-    this.triggerEventManager = new TriggerEventManager(); // user 訂閱的事件
-    this.handleEventManager = new HandleEventManager(); // 向 dom 訂閱的事件
+    this.userHandleEventManager = new UserHandleEventManager(); // user 訂閱的事件
+    this.domHandleEventManager = new DomHandleEventManager(); // 向 dom 訂閱的事件
     this.record = {
       position: { clientX: 0, clientY: 0 },
       start: false,
@@ -33,14 +33,15 @@ export default class TouchEventConverter {
 
   triggerEvent(eventName, e) {
     [false, true].forEach(useCapture => {
-      if (this.handleEventManager.has(eventName, useCapture)) this.triggerEventManager.action(eventName, useCapture, e);
+      if (this.domHandleEventManager.has(eventName, useCapture))
+        this.userHandleEventManager.action(eventName, useCapture, e);
     });
   }
 
-  handleTouchStart(e) {
-    const hasClick = this.handleEventManager.has('click', true) || this.handleEventManager.has('click', false);
+  handleTouchStart(e, useCapture) {
+    const hasClick = this.domHandleEventManager.has('click', true) || this.domHandleEventManager.has('click', false);
     const hasContextMenu =
-      this.handleEventManager.has('contextmenu', true) || this.handleEventManager.has('contextmenu', false);
+      this.domHandleEventManager.has('contextmenu', true) || this.domHandleEventManager.has('contextmenu', false);
 
     this.record = {
       ...this.record,
@@ -56,9 +57,11 @@ export default class TouchEventConverter {
         : null,
       start: hasClick || hasContextMenu,
     };
+
+    this.userHandleEventManager.action('mousedown', useCapture, e);
   }
 
-  handleTouchEnd(e) {
+  handleTouchEnd(e, useCapture) {
     const { showContextMenu, start } = this.record;
     if (start) {
       this.record = { ...this.record, start: false };
@@ -68,12 +71,13 @@ export default class TouchEventConverter {
       this.triggerEvent('contextmenu', e);
       this.record = { ...this.record, showContextMenu: false, start: false };
     }
+    this.userHandleEventManager.action('mouseup', useCapture, e);
   }
 
   handleTouchMove(e) {
     const { start } = this.record;
     if (start) {
-      if (this.handleEventManager.has('contextmenu', true) || this.handleEventManager.has('contextmenu', false)) {
+      if (this.domHandleEventManager.has('contextmenu', true) || this.domHandleEventManager.has('contextmenu', false)) {
         if (checkInsideElement(e, this.target)) {
           const {
             position: { clientX, clientY },
@@ -96,7 +100,7 @@ export default class TouchEventConverter {
 
   handleMaterialEvent(eventName, useCapture) {
     MATERIAL_EVENT[eventName].forEach(name => {
-      if (this.handleEventManager.has(name, useCapture) === false) {
+      if (this.domHandleEventManager.has(name, useCapture) === false) {
         let eventHandler;
         if (/touch/.test(name))
           eventHandler = e => {
@@ -104,34 +108,34 @@ export default class TouchEventConverter {
 
             switch (name) {
               case 'touchstart':
-                this.handleTouchStart(e);
+                this.handleTouchStart(e, useCapture);
                 break;
               case 'touchend':
-                this.handleTouchEnd(e);
+                this.handleTouchEnd(e, useCapture);
                 break;
               case 'touchmove':
                 this.handleTouchMove(e);
                 break;
               // no default
             }
-
-            this.triggerEventManager.action(eventName, useCapture, e);
           };
-        else eventHandler = e => this.triggerEventManager.action(eventName, useCapture, e);
-        this.target.addEventListener(eventName, eventHandler, useCapture);
+        else eventHandler = e => this.userHandleEventManager.action(name, useCapture, e);
+        this.target.addEventListener(name, eventHandler, useCapture);
+        this.domHandleEventManager.set(eventName, useCapture, eventHandler);
       }
     });
   }
 
   addEventListener(eventName, fn, useCapture = false) {
     if (this.validTarget()) {
-      const success = this.triggerEventManager.add(eventName, fn, useCapture);
+      const success = this.userHandleEventManager.add(eventName, fn, useCapture);
       if (success) {
-        if (this.handleEventManager.has(eventName, useCapture) === false) {
+        if (this.domHandleEventManager.has(eventName, useCapture) === false) {
           if (MATERIAL_EVENT[eventName]) this.handleMaterialEvent(eventName, useCapture);
           else {
-            const eventHandler = e => this.triggerEventManager.action(eventName, useCapture, e);
+            const eventHandler = e => this.userHandleEventManager.action(eventName, useCapture, e);
             this.target.addEventListener(eventName, eventHandler, useCapture);
+            this.domHandleEventManager.set(eventName, useCapture, eventHandler);
           }
         }
       }
@@ -140,23 +144,30 @@ export default class TouchEventConverter {
 
   removeEventListener(eventName, fn, useCapture = false) {
     if (this.validTarget()) {
-      this.triggerEventManager.delete(eventName, fn, useCapture);
+      this.userHandleEventManager.delete(eventName, fn, useCapture);
 
       // 清除已經不需要的 event handler
-      if (this.triggerEventManager.has(eventName, useCapture) === false) {
+      if (this.userHandleEventManager.has(eventName, useCapture) === false) {
+        const deleteList = [];
         if (MATERIAL_EVENT[eventName]) {
-          const onlineEventMap = Object.keys(MATERIAL_EVENT)
-            .filter(eventKey => this.triggerEventManager.has(eventKey, useCapture) === true)
-            .reduce((map, eventKey) => {
-              MATERIAL_EVENT[eventKey].forEach(item => {
-                if (map.has(item) === false) map.set(item, item);
+          const onlineEventList = Object.keys(MATERIAL_EVENT)
+            .filter(name => this.userHandleEventManager.has(name, useCapture) === true)
+            .reduce((arr, name) => {
+              MATERIAL_EVENT[name].forEach(item => {
+                if (arr.includes(item) === false) arr.push(name);
               });
-              return map;
-            }, new Map());
+              return arr;
+            }, []);
           MATERIAL_EVENT[eventName].forEach(item => {
-            if (onlineEventMap.has(item) === false) this.handleEventManager.delete(item, useCapture);
+            if (onlineEventList.includes(item) === false) deleteList.push(item);
           });
-        } else this.handleEventManager.delete(eventName, useCapture);
+        } else deleteList.push(eventName);
+
+        deleteList.forEach(item => {
+          const eventHandler = this.domHandleEventManager.get(eventName, useCapture);
+          this.target.removeEventListener(item, eventHandler, useCapture);
+          this.domHandleEventManager.delete(eventName, useCapture);
+        });
       }
     }
   }
