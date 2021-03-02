@@ -14,6 +14,8 @@ const MATERIAL_EVENT = {
 const CONTEXT_MENU_TIME = 1000;
 const CONTEXT_MENU_MOVE_LIMIT_PIXEL = 3 ** 2;
 
+const LEFT_BUTTON = 0;
+
 export default class TouchEventConverter {
   constructor(target) {
     this.target = target;
@@ -119,7 +121,18 @@ export default class TouchEventConverter {
               // no default
             }
           };
-        else eventHandler = e => this.userHandleEventManager.action(name, useCapture, e);
+        else {
+          switch (eventName) {
+            case 'mousedown':
+            case 'mouseup':
+              eventHandler = e => {
+                if (e.button === LEFT_BUTTON) this.userHandleEventManager.action(name, useCapture, e);
+              };
+              break;
+            default:
+              eventHandler = e => this.userHandleEventManager.action(name, useCapture, e);
+          }
+        }
         this.target.addEventListener(name, eventHandler, useCapture);
         this.domHandleEventManager.set(name, useCapture, eventHandler);
       }
