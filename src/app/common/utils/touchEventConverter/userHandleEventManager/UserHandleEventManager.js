@@ -4,7 +4,7 @@
  *    useCapture map
  *      function map
  */
-export default class TriggerEventManager {
+export default class UserHandleEventManager {
   static validEventName = eventName => typeof eventName === 'string' && eventName !== '';
 
   constructor() {
@@ -20,7 +20,7 @@ export default class TriggerEventManager {
   }
 
   add(eventName, fn, useCapture = false) {
-    if (TriggerEventManager.validEventName(eventName)) {
+    if (UserHandleEventManager.validEventName(eventName)) {
       if (this.eventMap.has(eventName) === false) this.eventMap.set(eventName, new Map());
 
       const useCaptureMap = this.eventMap.get(eventName);
@@ -34,7 +34,7 @@ export default class TriggerEventManager {
   }
 
   delete(eventName, fn, useCapture) {
-    if (TriggerEventManager.validEventName(eventName)) {
+    if (UserHandleEventManager.validEventName(eventName)) {
       if (this.eventMap.has(eventName) === true) {
         const useCaptureMap = this.eventMap.get(eventName);
         if (useCaptureMap.has(useCapture) === true) {
