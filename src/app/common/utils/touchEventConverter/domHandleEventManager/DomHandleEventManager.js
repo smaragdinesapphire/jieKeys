@@ -3,7 +3,7 @@
  * event map
  *    useCapture map
  */
-export default class HandleEventManager {
+export default class DomHandleEventManager {
   static validEventName = eventName => typeof eventName === 'string' && eventName !== '';
 
   constructor() {
@@ -11,7 +11,7 @@ export default class HandleEventManager {
   }
 
   set(eventName, useCapture = false, fn) {
-    if (HandleEventManager.validEventName(eventName)) {
+    if (DomHandleEventManager.validEventName(eventName)) {
       if (this.eventMap.has(eventName) === false) this.eventMap.set(eventName, new Map());
 
       const useCaptureMap = this.eventMap.get(eventName);
@@ -22,7 +22,7 @@ export default class HandleEventManager {
   }
 
   get(eventName, useCapture = false) {
-    if (HandleEventManager.validEventName(eventName)) {
+    if (DomHandleEventManager.validEventName(eventName)) {
       if (this.eventMap.has(eventName)) {
         const useCaptureMap = this.eventMap.get(eventName);
         return useCaptureMap.get(useCapture);
@@ -32,7 +32,7 @@ export default class HandleEventManager {
   }
 
   delete(eventName, useCapture) {
-    if (HandleEventManager.validEventName(eventName)) {
+    if (DomHandleEventManager.validEventName(eventName)) {
       if (this.eventMap.has(eventName) === true) {
         const useCaptureMap = this.eventMap.get(eventName);
         if (useCaptureMap.has(useCapture) === true) {
