@@ -1,10 +1,33 @@
 .jieKeys-button {
   box-sizing: border-box;
   border: 1px solid black;
-  width: 100px;
-  height: 28px;
+  border-radius: 4px;
+  width: max-content;
+  padding: 4px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  &--action {
+    background: rgb(0, 225, 0);
+  }
+  &--holding {
+    background: rgb(0, 195, 0);
+  }
+
+  &:hover:not(&--holding):not(&--disable) {
+    background: rgb(0, 255, 0);
+  }
+
+  &--disable {
+    background: rgb(0, 90, 0);
+    &,
+    * {
+      cursor: not-allowed;
+    }
+  }
+
+  touch-action: none; // 阻饒放大縮小的事件
+  user-select: none; // 是否能選到文本
 }
