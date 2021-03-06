@@ -177,9 +177,9 @@ export default class TouchEventConverter {
         } else deleteList.push(eventName);
 
         deleteList.forEach(item => {
-          const eventHandler = this.domHandleEventManager.get(eventName, useCapture);
+          const eventHandler = this.domHandleEventManager.get(item, useCapture);
           this.target.removeEventListener(item, eventHandler, useCapture);
-          this.domHandleEventManager.delete(eventName, useCapture);
+          this.domHandleEventManager.delete(item, useCapture);
         });
       }
     }
