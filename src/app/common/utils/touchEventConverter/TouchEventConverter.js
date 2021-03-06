@@ -11,7 +11,7 @@ const MATERIAL_EVENT = {
   mousemove: ['mousemove', 'touchmove'],
 };
 
-const CONTEXT_MENU_TIME = 1000;
+const CONTEXT_MENU_TIME = 600;
 const CONTEXT_MENU_MOVE_LIMIT_PIXEL = 3 ** 2;
 
 const LEFT_BUTTON = 0;
@@ -65,7 +65,7 @@ export default class TouchEventConverter {
 
   handleTouchEnd(e, useCapture) {
     const { showContextMenu, start } = this.record;
-
+    this.userHandleEventManager.action('mouseup', useCapture, e);
     if (showContextMenu) {
       this.triggerEvent('contextmenu', e, useCapture);
       this.record = { ...this.record, showContextMenu: false, start: false };
@@ -73,7 +73,6 @@ export default class TouchEventConverter {
       this.record = { ...this.record, start: false };
       if (checkInsideElement(e, this.target)) this.triggerEvent('click', e, useCapture);
     }
-    this.userHandleEventManager.action('mouseup', useCapture, e);
   }
 
   handleTouchMove(e, useCapture) {
