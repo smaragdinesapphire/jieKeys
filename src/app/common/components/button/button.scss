@@ -1,0 +1,40 @@
+.jieKeys-button {
+  box-sizing: border-box;
+  border-radius: 4px;
+  width: max-content;
+  padding: 8px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  margin: 4px;
+  box-shadow: rgb(0 0 0 / 30%) 0px 0px 2px 1px;
+  background: rgb(0, 195, 0);
+
+  &--holding {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    background: rgb(0, 180, 0);
+  }
+
+  &--action {
+    box-shadow: inset 0 0 2px 2px rgba(30, 30, 30, 0.3);
+  }
+
+  &:hover:not(&--holding):not(&--disable) {
+    background: rgb(0, 255, 0);
+  }
+
+  &--disable {
+    box-shadow: none;
+    background: rgb(150, 150, 150);
+    color: #666;
+    &,
+    * {
+      cursor: not-allowed;
+    }
+  }
+
+  touch-action: none; // 阻饒放大縮小的事件
+  user-select: none; // 是否能選到文本
+}
