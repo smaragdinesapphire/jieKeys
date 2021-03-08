@@ -33,27 +33,29 @@ const Button = props => {
     const fakeWindow = fakeWindowRef.current;
     const button = fakeButtonRef.current;
     const eventHandlerMap = new Map();
-    const handleMouseDown = e => {
-      setIsHolding(true);
-      if (eventHandler && eventHandler.onMouseDown) eventHandler.onMouseDown(e);
-    };
-    const handleMouseUp = () => setIsHolding(false);
-    Object.keys(eventHandler || {})
-      .filter(handleName => !!eventHandler[handleName])
-      .forEach(handleName => {
-        const eventName = handleName.slice(2).toLowerCase();
-        switch (eventName) {
-          case 'mousedown':
-            break;
-          default:
-            eventHandlerMap.set(eventName, eventHandler[handleName]);
-            button.addEventListener(eventName, eventHandler[handleName]);
-        }
-      });
-    button.addEventListener('mousedown', handleMouseDown);
-    fakeWindow.addEventListener('mouseup', handleMouseUp);
-    eventHandlerMap.set('mousedown', handleMouseDown);
-    eventHandlerMap.set('windowMouseup', handleMouseUp);
+    if (disable) {
+      const handleMouseDown = e => {
+        setIsHolding(true);
+        if (eventHandler && eventHandler.onMouseDown) eventHandler.onMouseDown(e);
+      };
+      const handleMouseUp = () => setIsHolding(false);
+      Object.keys(eventHandler || {})
+        .filter(handleName => !!eventHandler[handleName])
+        .forEach(handleName => {
+          const eventName = handleName.slice(2).toLowerCase();
+          switch (eventName) {
+            case 'mousedown':
+              break;
+            default:
+              eventHandlerMap.set(eventName, eventHandler[handleName]);
+              button.addEventListener(eventName, eventHandler[handleName]);
+          }
+        });
+      button.addEventListener('mousedown', handleMouseDown);
+      fakeWindow.addEventListener('mouseup', handleMouseUp);
+      eventHandlerMap.set('mousedown', handleMouseDown);
+      eventHandlerMap.set('windowMouseup', handleMouseUp);
+    }
 
     return () => {
       eventHandlerMap.forEach((handler, eventName) => {
@@ -66,7 +68,7 @@ const Button = props => {
         }
       });
     };
-  }, [compare(eventHandler, preEventHandlerRef.current)]);
+  }, [disable, compare(eventHandler, preEventHandlerRef.current)]);
 
   return (
     <div ref={buttonRef} className={buttonClass}>
