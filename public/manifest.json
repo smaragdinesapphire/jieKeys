@@ -1,0 +1,27 @@
+{
+  "name": "PWA-Next-Lang-Test",
+  "short_name": "PWA-Test",
+  "theme_color": "red",
+  "background_color": "blue",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/maskable_icon",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
