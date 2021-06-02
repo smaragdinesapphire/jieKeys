@@ -41,3 +41,6 @@ public/workbox-*
 yarn.lock
 next-env.d.ts
 package-lock.json
+
+# unit test report
+unitTestReport/
