@@ -7,6 +7,11 @@ describe('測試 Publisher', () => {
 
   class P extends Publisher {
     _subscribers: Array<CallbackFunction>;
+
+    constructor() {
+      super();
+      this._subscribers = [];
+    }
   }
 
   const fn1 = (arr: Array<string>): void => {
