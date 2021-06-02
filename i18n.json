@@ -1,8 +1,0 @@
-{
-  "locales": ["zh-tw"],
-  "defaultLocale": "zh-tw",
-  "pages": {
-    "*": ["common"],
-    "/": ["home"]
-  }
-}
