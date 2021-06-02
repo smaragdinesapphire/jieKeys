@@ -21,7 +21,7 @@ module.exports = {
   // collectCoverageFrom: undefined,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "coverage",
+  coverageDirectory: 'coverage',
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
@@ -29,7 +29,7 @@ module.exports = {
   // ],
 
   // Indicates which provider should be used to instrument code for coverage
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -80,8 +80,8 @@ module.exports = {
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   // moduleNameMapper: {},
-  "moduleNameMapper": {
-    "\\.(css|scss|sass|less)$": "identity-obj-proxy"
+  moduleNameMapper: {
+    '\\.(css|scss|sass|less)$': 'identity-obj-proxy',
   },
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -101,11 +101,15 @@ module.exports = {
   // Use this configuration option to add custom reporters to Jest
   // reporters: undefined,
   reporters: [
-    "default",
-    ["jest-html-reporters", { // reference: https://www.npmjs.com/package/jest-html-reporters
-      publicPath: './unitTestReport',
-      filename: "report.html",
-    }],
+    'default',
+    [
+      'jest-html-reporters',
+      {
+        // reference: https://www.npmjs.com/package/jest-html-reporters
+        publicPath: './unitTestReport',
+        filename: 'report.html',
+      },
+    ],
   ],
   // Automatically reset mock state between every test
   // resetMocks: false,
@@ -149,13 +153,7 @@ module.exports = {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-  // testMatch: [
-  //   "**/__tests__/**/*.[jt]s?(x)",
-  //   "**/?(*.)+(spec|test).[tj]s?(x)"
-  // ],
-  testMatch: [
-    "**/unitTest/**/*.[jt]s?(x)"
-  ],
+  testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
