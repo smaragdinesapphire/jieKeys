@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import Database from '../Database';
+import Database from '../Database.ts';
 
 describe('測試 Database', () => {
   const DB_NAME = 'test_DB';
