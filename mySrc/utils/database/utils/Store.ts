@@ -1,15 +1,30 @@
+interface StoreProps {
+  db: IDBDatabase;
+  name: string;
+}
+
+interface GetObjectStoreProps {
+  db: IDBDatabase;
+  storeName: string;
+  mode: 'readonly' | 'readwrite';
+}
+type Key = string | number;
+
 export default class Store {
-  static getObjectStore({ db, storeName, mode }) {
+  private _name: string;
+  private _db: IDBDatabase;
+
+  static getObjectStore({ db, storeName, mode }: GetObjectStoreProps): IDBObjectStore {
     const tx = db.transaction(storeName, mode);
     return tx.objectStore(storeName);
   }
 
-  constructor({ db, name }) {
+  constructor({ db, name }: StoreProps) {
     this._name = name;
     this._db = db;
   }
 
-  set(data) {
+  set(data: unknown): Promise<void> {
     const store = Store.getObjectStore({ db: this._db, storeName: this._name, mode: 'readwrite' });
     return new Promise((resolve, reject) => {
       try {
@@ -25,7 +40,7 @@ export default class Store {
     });
   }
 
-  get(key) {
+  get(key: Key): Promise<void> {
     const store = Store.getObjectStore({ db: this._db, storeName: this._name, mode: 'readonly' });
     return new Promise((resolve, reject) => {
       const req = store.get(key);
@@ -34,23 +49,23 @@ export default class Store {
     });
   }
 
-  getAll() {
+  getAll(): Promise<Array<unknown>> {
     return new Promise(resolve => {
       const datas = [];
       const store = Store.getObjectStore({ db: this._db, storeName: this._name, mode: 'readonly' });
       store.openCursor().addEventListener('success', event => {
-        const cursor = event.target.result;
+        const cursor = (<IDBRequest>event.target).result;
         if (cursor) {
           datas.push(cursor.value);
           cursor.continue();
         } else {
-          resolve(JSON.stringify(datas));
+          resolve(datas);
         }
       });
     });
   }
 
-  has(key) {
+  has(key: Key): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const store = Store.getObjectStore({ db: this._db, storeName: this._name, mode: 'readonly' });
       const req = store.count(IDBKeyRange.only(key));
@@ -59,7 +74,7 @@ export default class Store {
     });
   }
 
-  delete(key) {
+  delete(key: Key): Promise<void> {
     return new Promise((resolve, reject) => {
       // As per spec http://www.w3.org/TR/IndexedDB/#object-store-deletion-operation
       // the result of the Object Store Deletion Operation algorithm is
@@ -76,7 +91,7 @@ export default class Store {
     });
   }
 
-  clear() {
+  clear(): Promise<void> {
     return new Promise((resolve, reject) => {
       const store = Store.getObjectStore({ db: this._db, storeName: this._name, mode: 'readwrite' });
       const req = store.clear();
