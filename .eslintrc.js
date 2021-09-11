@@ -38,7 +38,7 @@ module.exports = {
         'jsx-a11y/anchor-is-valid': 'off',
 
         // Why would you want unused vars?
-        '@typescript-eslint/no-unused-vars': ['error'],
+        '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
 
         // I suggest this setting for requiring return types on functions only where useful
         '@typescript-eslint/explicit-function-return-type': [
@@ -49,6 +49,12 @@ module.exports = {
           },
         ],
         'prettier/prettier': ['error', {}, { usePrettierrc: true }], // Includes .prettierrc.js rules
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: ['@material-ui/*/*/*', '!@material-ui/core/test-utils/*'],
+          },
+        ],
       },
     },
     {
@@ -82,6 +88,7 @@ module.exports = {
         'prettier/prettier': ['error'],
         'import/no-named-as-default': 'off',
         'no-underscore-dangle': ['error', { allowAfterThis: true }],
+        'no-unused-vars': ['error', { ignoreRestSiblings: true }],
       },
     },
   ],
