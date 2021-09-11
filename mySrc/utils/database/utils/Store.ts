@@ -51,7 +51,7 @@ export default class Store {
 
   getAll(): Promise<Array<unknown>> {
     return new Promise(resolve => {
-      const datas = [];
+      const datas: unknown[] = [];
       const store = Store.getObjectStore({ db: this._db, storeName: this._name, mode: 'readonly' });
       store.openCursor().addEventListener('success', event => {
         const cursor = (<IDBRequest>event.target).result;
