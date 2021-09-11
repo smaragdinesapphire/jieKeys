@@ -1,6 +1,6 @@
 import Store from './utils/Store';
 
-interface UpgradeMethod {
+export interface UpgradeMethod {
   (e: IDBVersionChangeEvent): void;
 }
 type StoreMap = Map<string, Store>;
@@ -11,22 +11,25 @@ interface DatabaseProps {
   upgradeMethod: UpgradeMethod;
 }
 
+interface GetStoreType {
+  (storeMap: StoreMap, db: IDBDatabase | null, storeName: string | null): Store | null;
+}
+
 type Key = number | string;
 
 export default class Database {
   private _name: string;
   private _version: number;
-  private _db: IDBDatabase;
-  private _upgradeMethod: UpgradeMethod;
+  private _db: IDBDatabase | null;
+  private _upgradeMethod: UpgradeMethod | null;
   private _storeMap: StoreMap;
 
-  static getStore(storeMap: StoreMap, db: IDBDatabase, storeName: string = null): Store {
-    if (storeName !== null) {
-      if (storeMap.has(storeName) === false) storeMap.set(storeName, new Store({ db, name: storeName }));
-      return storeMap.get(storeName);
-    }
-    return null;
-  }
+  static getStore: GetStoreType = (storeMap, db, storeName = null) => {
+    if (db === null) return null;
+    if (storeName === null) return null;
+    if (storeMap.has(storeName) === false) storeMap.set(storeName, new Store({ db, name: storeName }));
+    return storeMap.get(storeName) as Store;
+  };
 
   constructor({ name, version, upgradeMethod }: DatabaseProps) {
     this._name = name;
@@ -50,31 +53,31 @@ export default class Database {
 
   set(storeName: string, data: unknown): Promise<void> {
     const store = Database.getStore(this._storeMap, this._db, storeName);
-    return store ? store.set(data) : Promise.reject(new Error('Plese check the store name'));
+    return store ? store.set(data) : Promise.reject(new Error('Please check the store name'));
   }
 
   get(storeName: string, key: Key): Promise<unknown> {
     const store = Database.getStore(this._storeMap, this._db, storeName);
-    return store ? store.get(key) : Promise.reject(new Error('Plese check the store name'));
+    return store ? store.get(key) : Promise.reject(new Error('Please check the store name'));
   }
 
   getAll(storeName: string): Promise<Array<unknown>> {
     const store = Database.getStore(this._storeMap, this._db, storeName);
-    return store ? store.getAll() : Promise.reject(new Error('Plese check the store name'));
+    return store ? store.getAll() : Promise.reject(new Error('Please check the store name'));
   }
 
   has(storeName: string, key: Key): Promise<boolean> {
     const store = Database.getStore(this._storeMap, this._db, storeName);
-    return store ? store.has(key) : Promise.reject(new Error('Plese check the store name'));
+    return store ? store.has(key) : Promise.reject(new Error('Please check the store name'));
   }
 
   delete(storeName: string, key: Key): Promise<void> {
     const store = Database.getStore(this._storeMap, this._db, storeName);
-    return store ? store.delete(key) : Promise.reject(new Error('Plese check the store name'));
+    return store ? store.delete(key) : Promise.reject(new Error('Please check the store name'));
   }
 
   clear(storeName: string): Promise<void> {
     const store = Database.getStore(this._storeMap, this._db, storeName);
-    return store ? store.clear() : Promise.reject(new Error('Plese check the store name'));
+    return store ? store.clear() : Promise.reject(new Error('Please check the store name'));
   }
 }
